@@ -119,7 +119,7 @@ sec:
    t := A_Hour*360//12 + (A_Min*360//60)//12 +90 
    R1 := ClockDiameter//2-ceil((ClockDiameter//2)*0.5) ; outer position
    FormatTime, TimeString,, HHmm
-If ( ( TimeString >= 1300 and TimeString <= 1359 ) || ( TimeString >= 2000 and TimeString <= 2059 ) || ( TimeString >= 2200 || TimeString <= 59 ) || ( TimeString >= 700 and TimeString <= 759 ) )
+If (( ( TimeString >= 1300 and TimeString <= 1359 ) || ( TimeString >= 2000 and TimeString <= 2059 ) || ( TimeString >= 2200 || TimeString <= 59 ) || ( TimeString >= 700 and TimeString <= 759 ) ) && !TimerTimeString)
    pPen := Gdip_CreatePen(0xa0800000, floor((ClockDiameter/100)*3.5))
 else
    pPen := Gdip_CreatePen(0xa0000080, floor((ClockDiameter/100)*3.5))
@@ -131,7 +131,36 @@ else
 ; Draw MinutesPointer
    t := A_Min*360//60+90 
    R1 := ClockDiameter//2-ceil((ClockDiameter//2)*0.25) ; outer position
-   pPen := Gdip_CreatePen(0xa0000080, floor((ClockDiameter/100)*2.7))
+   If(TimerTimeString)
+   {
+      TimerTimeString:=SubStr("0000" . TimerTimeString, -4)
+      TimerTime:=SubStr(TimerTimeString, -1, 2) + SubStr(TimerTimeString, -3, 2)*60
+      CurrentTimeString:=SubStr("0000" . TimeString, -4)
+      CurrentTime:=SubStr(CurrentTimeString, -1, 2) + SubStr(CurrentTimeString, -3, 2)*60
+      if(TimerTime=CurrentTime)
+      {
+         if(mod(A_Sec, 2)=0)
+            pPen := Gdip_CreatePen(0xa0800000, floor((ClockDiameter/100)*2.7))
+         else
+            pPen := Gdip_CreatePen(0xa0F0F000, floor((ClockDiameter/100)*2.7))
+         if(A_Sec=59)
+            TimerTimeString:=0
+      }
+      else If(TimerTime-CurrentTime<5)
+      {
+         pPen := Gdip_CreatePen(0xa0800000, floor((ClockDiameter/100)*2.7))
+      }
+      else If(TimerTime-CurrentTime<10)
+      {
+         pPen := Gdip_CreatePen(0xa0F0F000, floor((ClockDiameter/100)*2.7))
+      }
+      else
+      {
+            pPen := Gdip_CreatePen(0xa0008000, floor((ClockDiameter/100)*2.7))
+      }
+   }
+   else
+      pPen := Gdip_CreatePen(0xa0000080, floor((ClockDiameter/100)*2.7))
    Gdip_DrawLine(G, pPen, CenterX, CenterY
       , ceil(CenterX - (R1 * Cos(t * Atan(1) * 4 / 180)))
       , ceil(CenterY - (R1 * Sin(t * Atan(1) * 4 / 180))))
@@ -177,4 +206,18 @@ Return
 RestoreClock:
 WinShow, ahk_id %hClock%
 DllCall("SendMessage", "UInt", hShell, "UInt", 0x5, "UInt", 0, "UInt", 0x0)
+return
+
+^#+t::
+GoSub, SetTimerTimeString
+return
+
+SetTimerTimeString:
+InputBox, TimerTimeString, Timer Time String, , , 400, 100
+If ErrorLevel
+        Return
+if(TimerTimeString="")
+   TimerTimeString:=0
+if (!(TimerTimeString is number))
+   TimerTimeString:=0
 return
