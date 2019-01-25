@@ -146,17 +146,21 @@ else
          if(A_Sec=59)
             TimerTimeString:=0
       }
-      else If(TimerTime-CurrentTime<5)
+      else If(TimerTime-CurrentTime<=5)
       {
          pPen := Gdip_CreatePen(0xa0800000, floor((ClockDiameter/100)*2.7))
       }
-      else If(TimerTime-CurrentTime<10)
+      else If(TimerTime-CurrentTime<=10)
       {
          pPen := Gdip_CreatePen(0xa0F0F000, floor((ClockDiameter/100)*2.7))
       }
+      else If(TimerTime-CurrentTime<=60)
+      {
+         pPen := Gdip_CreatePen(0xa0008000, floor((ClockDiameter/100)*2.7))
+      }
       else
       {
-            pPen := Gdip_CreatePen(0xa0008000, floor((ClockDiameter/100)*2.7))
+         pPen := Gdip_CreatePen(0xa0005050, floor((ClockDiameter/100)*2.7))
       }
    }
    else
