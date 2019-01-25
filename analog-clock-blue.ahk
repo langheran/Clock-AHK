@@ -119,7 +119,7 @@ sec:
    t := A_Hour*360//12 + (A_Min*360//60)//12 +90 
    R1 := ClockDiameter//2-ceil((ClockDiameter//2)*0.5) ; outer position
    FormatTime, TimeString,, HHmm
-If ( ( TimeString >= 1300 and TimeString <= 1359 ) || ( TimeString >= 2000 and TimeString <= 2059 ) || ( TimeString >= 700 and TimeString <= 759 ) )
+If ( ( TimeString >= 1300 and TimeString <= 1359 ) || ( TimeString >= 2000 and TimeString <= 2059 ) || ( TimeString >= 2200 || TimeString <= 59 ) || ( TimeString >= 700 and TimeString <= 759 ) )
    pPen := Gdip_CreatePen(0xa0800000, floor((ClockDiameter/100)*3.5))
 else
    pPen := Gdip_CreatePen(0xa0000080, floor((ClockDiameter/100)*3.5))
