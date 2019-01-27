@@ -26,6 +26,7 @@ If !pToken := Gdip_Startup()
 }
 OnExit, Exit
  
+ ShowClock:
 SysGet, MonitorPrimary, MonitorPrimary
 SysGet, WA, MonitorWorkArea, %MonitorPrimary%
 WAWidth := WARight-WALeft
@@ -110,8 +111,12 @@ sec:
    pBrush := Gdip_BrushCreateSolid(0x66000080)
    ;Gdip_FillEllipse(G, pBrush, CenterX-(Diameter//2), CenterY-(Diameter//2),Diameter, Diameter)
    Gdip_DeleteBrush(pBrush)
-   pBrush := Gdip_BrushCreateSolid(0x80000080)
-   ;Gdip_FillEllipse(G, pBrush, CenterX-(Diameter//2), CenterY-(Diameter//2),Diameter, Diameter)
+   ;pBrush := Gdip_BrushCreateSolid(0x80000080)
+if(WhiteInnerBackground)
+   pBrush := Gdip_BrushCreateSolid(0x80ffffff) ; Inner white background
+else
+   pBrush := Gdip_BrushCreateSolid(0x00ffffff) ;
+   Gdip_FillEllipse(G, pBrush, CenterX-(Diameter//2), CenterY-(Diameter//2),Diameter, Diameter)
    Gdip_DeleteBrush(pBrush)
  
 ; Draw HoursPointer
@@ -130,21 +135,37 @@ else
  
 ; Draw MinutesPointer
    t := A_Min*360//60+90 
-   R1 := ClockDiameter//2-ceil((ClockDiameter//2)*0.25) ; outer position
    If(TimerTimeString)
    {
       TimerTimeString:=SubStr("0000" . TimerTimeString, -4)
       TimerTime:=SubStr(TimerTimeString, -1, 2) + SubStr(TimerTimeString, -3, 2)*60
       CurrentTimeString:=SubStr("0000" . TimeString, -4)
       CurrentTime:=SubStr(CurrentTimeString, -1, 2) + SubStr(CurrentTimeString, -3, 2)*60
-      if(TimerTime=CurrentTime)
+      if((TimerTime<=CurrentTime))
       {
-         if(mod(A_Sec, 2)=0)
-            pPen := Gdip_CreatePen(0xa0800000, floor((ClockDiameter/100)*2.7))
+         if((CurrentTime-TimerTime<=5))
+         {
+            if(TimerTime=CurrentTime)
+            {
+               if(mod(A_Sec, 2)=0)
+                  pPen := Gdip_CreatePen(0xa0800000, floor((ClockDiameter/100)*2.7))
+               else
+                  pPen := Gdip_CreatePen(0xa0F0F000, floor((ClockDiameter/100)*2.7))
+            }
+            else
+            {
+               pPen := Gdip_CreatePen(0xa0800000, floor((ClockDiameter/100)*2.7))
+               MinuteMark:=SubStr(TimerTimeString, -1, 2)
+               GoSub, DrawClockMark
+               pPen := Gdip_CreatePen(0xa0000080, floor((ClockDiameter/100)*2.7))
+            }
+         }
          else
-            pPen := Gdip_CreatePen(0xa0F0F000, floor((ClockDiameter/100)*2.7))
-         if(A_Sec=59)
+         {
             TimerTimeString:=0
+            SetTimer, sec, Off
+            GoSub, ShowClock
+         }
       }
       else If(TimerTime-CurrentTime<=5)
       {
@@ -165,6 +186,7 @@ else
    }
    else
       pPen := Gdip_CreatePen(0xa0000080, floor((ClockDiameter/100)*2.7))
+   R1 := ClockDiameter//2-ceil((ClockDiameter//2)*0.25) ; outer position
    Gdip_DrawLine(G, pPen, CenterX, CenterY
       , ceil(CenterX - (R1 * Cos(t * Atan(1) * 4 / 180)))
       , ceil(CenterY - (R1 * Sin(t * Atan(1) * 4 / 180))))
@@ -189,6 +211,17 @@ DrawClockMarks:
          , CenterY - ceil(R1 * Sin(((a_index-1)*360//Items) * Atan(1) * 4 / 180))
          , CenterX - ceil(R2 * Cos(((a_index-1)*360//Items) * Atan(1) * 4 / 180))
          , CenterY - ceil(R2 * Sin(((a_index-1)*360//Items) * Atan(1) * 4 / 180)) )
+return
+
+DrawClockMark:
+   MinuteMark2:=MinuteMark+15
+   R1 := Diameter//2-1+10.5                        ; outer position
+   R2 := Diameter//2-1+10.5-ceil(Diameter//2*0.15) ; inner position
+      Gdip_DrawLine(G, pPen
+         , CenterX - ceil(R1 * Cos(((MinuteMark2)*360//60) * Atan(1) * 4 / 180))
+         , CenterY - ceil(R1 * Sin(((MinuteMark2)*360//60) * Atan(1) * 4 / 180))
+         , CenterX - ceil(R2 * Cos(((MinuteMark2)*360//60) * Atan(1) * 4 / 180))
+         , CenterY - ceil(R2 * Sin(((MinuteMark2)*360//60) * Atan(1) * 4 / 180)) )
 return
  
 WM_LBUTTONDOWN() {
@@ -216,12 +249,20 @@ return
 GoSub, SetTimerTimeString
 return
 
+^#+w::
+WhiteInnerBackground:=!WhiteInnerBackground
+GoSub, ShowClock
+return
+
 SetTimerTimeString:
 InputBox, TimerTimeString, Timer Time String, , , 400, 100
 If ErrorLevel
         Return
 if(TimerTimeString="")
+{
+   GoSub, ShowClock
    TimerTimeString:=0
+}
 if (!(TimerTimeString is number))
    TimerTimeString:=0
 return
