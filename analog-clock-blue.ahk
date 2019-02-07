@@ -202,6 +202,7 @@ else
    Gdip_DeletePen(pPen)
  
    UpdateLayeredWindow(hwnd1, hdc) ;, xPos, yPos, ClockDiameter, ClockDiameter)
+   Gui, 1: -Caption +E0x80000 +LastFound +AlwaysOnTop +ToolWindow +OwnDialogs
 return
  
 DrawClockMarks:
