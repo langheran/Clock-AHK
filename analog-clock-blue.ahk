@@ -6,7 +6,9 @@
 #SingleInstance, Force
 #NoEnv
 SetBatchLines, -1
- 
+
+WhiteInnerBackground:=1
+
 ;RegWrite, REG_DWORD, HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer, HideSCAHealth , 1
 
  ControlGet, hClock, Hwnd,, TrayClockWClass1, ahk_class Shell_TrayWnd
