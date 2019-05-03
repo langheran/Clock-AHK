@@ -202,6 +202,19 @@ else
    ;    , ceil(CenterX - (R1 * Cos(t * Atan(1) * 4 / 180)))
    ;    , ceil(CenterY - (R1 * Sin(t * Atan(1) * 4 / 180))))
    Gdip_DeletePen(pPen)
+
+   if(LastSaveTimeString && LastSaveTimeString!="")
+   {
+      HourMark:=SubStr(TimeString, 1, 2)
+      LastSaveHourMark:=SubStr(TimeString, 1, 2)
+      if(HourMark=LastSaveHourMark)
+      {
+         MinuteMark:=SubStr(LastSaveTimeString, -1, 2)
+         pPen := Gdip_CreatePen(0xa0000FF0, floor((ClockDiameter/100)*2.7))
+         GoSub, DrawClockMark
+         Gdip_DeletePen(pPen)
+      }
+   }
  
    UpdateLayeredWindow(hwnd1, hdc) ;, xPos, yPos, ClockDiameter, ClockDiameter)
    Gui, 1: -Caption +E0x80000 +LastFound +AlwaysOnTop +ToolWindow +OwnDialogs
@@ -254,6 +267,12 @@ return
 
 ^#+w::
 WhiteInnerBackground:=!WhiteInnerBackground
+GoSub, ShowClock
+return
+
+~^s::
+FormatTime, TimeString,, HHmm
+LastSaveTimeString:=TimeString
 GoSub, ShowClock
 return
 
