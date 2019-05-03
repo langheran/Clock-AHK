@@ -205,9 +205,7 @@ else
 
    if(LastSaveTimeString && LastSaveTimeString!="")
    {
-      HourMark:=SubStr(TimeString, 1, 2)
-      LastSaveHourMark:=SubStr(TimeString, 1, 2)
-      if(HourMark=LastSaveHourMark)
+      if(GetTimeStringMinutesDiff(LastSaveTimeString, TimeString)<60)
       {
          MinuteMark:=SubStr(LastSaveTimeString, -1, 2)
          pPen := Gdip_CreatePen(0xa0000FF0, floor((ClockDiameter/100)*2.7))
@@ -288,3 +286,20 @@ if(TimerTimeString="")
 if (!(TimerTimeString is number))
    TimerTimeString:=0
 return
+
+GetTimeStringMinutesDiff(t1,t2)
+{
+   t1h:=SubStr(t1, 1, 2)
+   t2h:=SubStr(t2, 1, 2)
+   t1m:=SubStr(t1, -1, 2)
+   t2m:=SubStr(t2, -1, 2)
+   t1d+=0
+   t2d+=0
+   t1d+=t1h, Hours
+   t1d+=t1m, Minutes
+   t2d+=t2h, Hours
+   t2d+=t2m, Minutes
+   comptime:=t2d
+   EnvSub, comptime, %t1d%, Minutes
+   return  comptime
+}
