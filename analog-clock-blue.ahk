@@ -208,7 +208,7 @@ else
       if(GetTimeStringMinutesDiff(LastSaveTimeString, TimeString)<60)
       {
          MinuteMark:=SubStr(LastSaveTimeString, -1, 2)
-         pPen := Gdip_CreatePen(0xa0000FF0, floor((ClockDiameter/100)*2.7))
+         pPen := Gdip_CreatePen(0xD0D8333A, floor((ClockDiameter/100)*2.7))
          GoSub, DrawClockMark
          Gdip_DeletePen(pPen)
       }
