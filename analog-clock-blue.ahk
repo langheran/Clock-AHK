@@ -219,7 +219,7 @@ else
          if(lastSaveMinutes<62)
             GoSub, ShowClock
          else
-            LastSaveTimeString:=""
+            LastSaveTimeString:=0
       }
    }
  
