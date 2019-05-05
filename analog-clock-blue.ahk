@@ -126,6 +126,7 @@ else
    t := A_Hour*360//12 + (A_Min*360//60)//12 +90 
    R1 := ClockDiameter//2-ceil((ClockDiameter//2)*0.5) ; outer position
    FormatTime, TimeString,, HHmm
+   FormatTime, TimeStringMinutes,, mm
 If (( ( TimeString >= 1300 and TimeString <= 1359 ) || ( TimeString >= 2000 and TimeString <= 2059 ) || ( TimeString >= 2200 || TimeString <= 59 ) || ( TimeString >= 700 and TimeString <= 759 ) ) && !TimerTimeString)
    pPen := Gdip_CreatePen(0xa0800000, floor((ClockDiameter/100)*3.5))
 else
@@ -205,12 +206,20 @@ else
 
    if(LastSaveTimeString && LastSaveTimeString!="")
    {
-      if(GetTimeStringMinutesDiff(LastSaveTimeString, TimeString)<60)
+      lastSaveMinutes:=GetTimeStringMinutesDiff(LastSaveTimeString, TimeString)
+      if(lastSaveMinutes<60)
       {
          MinuteMark:=SubStr(LastSaveTimeString, -1, 2)
          pPen := Gdip_CreatePen(0xD0D8333A, floor((ClockDiameter/100)*2.7))
          GoSub, DrawClockMark
          Gdip_DeletePen(pPen)
+      }
+      else
+      {
+         if(lastSaveMinutes<62)
+            GoSub, ShowClock
+         else
+            LastSaveTimeString:=""
       }
    }
  
