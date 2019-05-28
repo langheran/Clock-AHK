@@ -2,10 +2,13 @@
 ; Parts based on examples from Tic's GDI+ Tutorials and of course on his GDIP.ahk
  
 ; This code has been licensed under the terms of EUPL 1.0
- #NoTrayIcon
 #SingleInstance, Force
 #NoEnv
 SetBatchLines, -1
+
+ ;#NoTrayIcon
+Menu, Tray, NoStandard
+Menu, Tray, Add, &Exit, Exit
 
 WhiteInnerBackground:=1
 
