@@ -9,6 +9,7 @@ SetBatchLines, -1
  ;#NoTrayIcon
 Menu, Tray, NoStandard
 Menu, Tray, Add, &Exit, Exit
+Menu, Tray, Add, &Exit Without Tray Clock, ExitWithoutTrayClock
 
 WhiteInnerBackground:=1
 
@@ -257,13 +258,16 @@ WM_LBUTTONDOWN() {
  
 ;esc::
 Exit:
+if(!ExitWithoutTrayClock)
    GoSub, RestoreClock
+ExitWithoutTrayClock:
    SelectObject(hdc, obm)
    DeleteObject(hbm)
    DeleteDC(hdc)
    Gdip_DeleteGraphics(G)
    Gdip_Shutdown(pToken)
-   ExitApp
+   ExitWithoutTrayClock:=1
+ExitApp
 Return
 
 RestoreClock:
