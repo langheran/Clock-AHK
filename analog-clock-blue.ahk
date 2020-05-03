@@ -8,10 +8,11 @@ SetBatchLines, -1
 
  ;#NoTrayIcon
 Menu, Tray, NoStandard
+Menu, Tray, Add, Toggle &Background, ToggleWhiteInnerBackground
 Menu, Tray, Add, &Exit, Exit
-Menu, Tray, Add, &Exit Without Tray Clock, ExitWithoutTrayClock
+Menu, Tray, Add, Exit Without Tray &Clock, ExitWithoutTrayClock
 
-WhiteInnerBackground:=1
+IniRead, WhiteInnerBackground, clock.ini, Configuration, WhiteInnerBackground,0
 
 ;RegWrite, REG_DWORD, HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer, HideSCAHealth , 1
 
@@ -280,15 +281,17 @@ GoSub, SetTimerTimeString
 return
 
 ^#+w::
+ToggleWhiteInnerBackground:
 WhiteInnerBackground:=!WhiteInnerBackground
+IniWrite, %WhiteInnerBackground%, clock.ini, Configuration, WhiteInnerBackground
 GoSub, ShowClock
 return
 
-~^s::
-FormatTime, TimeString,, HHmm
-LastSaveTimeString:=TimeString
-GoSub, ShowClock
-return
+;~^s::
+;FormatTime, TimeString,, HHmm
+;LastSaveTimeString:=TimeString
+;GoSub, ShowClock
+;return
 
 SetTimerTimeString:
 InputBox, TimerTimeString, Timer Time String, , , 400, 100
