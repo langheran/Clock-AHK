@@ -13,6 +13,7 @@ Menu, Tray, Add, &Exit, Exit
 Menu, Tray, Add, Exit Without Tray &Clock, ExitWithoutTrayClock
 
 IniRead, WhiteInnerBackground, clock.ini, Configuration, WhiteInnerBackground,0
+IniRead, WhiteOuterBackground, clock.ini, Configuration, WhiteOuterBackground,0
 
 ;RegWrite, REG_DWORD, HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer, HideSCAHealth , 1
 
@@ -54,6 +55,8 @@ CenterX := CenterY := floor(ClockDiameter/2) ; Center x
    obm := SelectObject(hdc, hbm), G := Gdip_GraphicsFromHDC(hdc)
    Gdip_SetSmoothingMode(G, 4)
  
+ if(WhiteOuterBackground)
+ {
 ; Draw outer circle
    Diameter := ClockDiameter
    pBrush := Gdip_BrushCreateSolid(0x66000080)
@@ -94,7 +97,7 @@ CenterX := CenterY := floor(ClockDiameter/2) ; Center x
    pPen := Gdip_CreatePen(0xc000F0F0, ceil((ClockDiameter//100)*3.4)) ; 2.3 % of total diameter is our pen width
    GoSub, DrawClockMarks
    Gdip_DeletePen(pPen)
- 
+ }
    ; The OnMessage will let us drag the clock
    OnMessage(0x201, "WM_LBUTTONDOWN")
    ;UpdateLayeredWindow(hwnd1, hdc, WALeft+((WAWidth-Width)//2), WATop+((WAHeight-Height)//2), Width, Height)
