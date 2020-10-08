@@ -283,7 +283,7 @@ return
 GoSub, SetTimerTimeString
 return
 
-^#+w::
+^#+!w::
 ToggleWhiteInnerBackground:
 WhiteInnerBackground:=!WhiteInnerBackground
 IniWrite, %WhiteInnerBackground%, clock.ini, Configuration, WhiteInnerBackground
